@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Imooc_Demo.iml" filepath="$PROJECT_DIR$/Imooc_Demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/imooc_okhttp/imooc_okhttp.iml" filepath="$PROJECT_DIR$/imooc_okhttp/imooc_okhttp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/imooc_umeng_channel/imooc_umeng_channel.iml" filepath="$PROJECT_DIR$/imooc_umeng_channel/imooc_umeng_channel.iml" />
+    </modules>
+  </component>
+</project>

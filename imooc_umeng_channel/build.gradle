@@ -1,0 +1,124 @@
+apply plugin: 'com.android.application'
+
+def releaseTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
+    defaultConfig {
+        applicationId "com.wlch.zl.imooc"
+        minSdkVersion 18
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // dex突破65535的限制
+        multiDexEnabled true
+        // 默认是umeng的渠道
+        manifestPlaceholders = [UMENG_CHANNEL_VALUE: "umeng"]
+    }
+    signingConfigs {
+        debug {
+            keyPassword '123123'
+            storeFile file('F:/keystore/sportshow.keystore')
+            storePassword '123123'
+            keyAlias 'sportshow.keystore'
+        }
+        release {
+            keyPassword '123123'
+            storeFile file('F:/keystore/sportshow.keystore')
+            storePassword '123123'
+            keyAlias 'sportshow.keystore'
+        }
+    }
+    buildTypes {
+        debug {
+            // 显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            // 移除无用的resource文件
+            shrinkResources false
+            // 是否混淆
+            minifyEnabled false
+            zipAlignEnabled false
+            // 混淆指定配置文件
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // 指定签名
+            signingConfig signingConfigs.debug
+        }
+        release {
+            // 不显示log
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            // 移除无用的resource文件
+            shrinkResources true
+            //  是否混淆
+            minifyEnabled true
+            zipAlignEnabled true
+            // 混淆指定配置文件
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // 指定签名
+            signingConfig signingConfigs.release
+        }
+    }
+    // 指定我们release包的输出文件名，该方法，可输出不同渠道名称的apk文件
+    applicationVariants.all { variant ->
+        if (variant.buildType.name.equals("release")) {
+            variant.outputs.each { output ->
+                def outFile = output.outputFile
+                if (outFile != null && outFile.name.endsWith(".apk")) {
+                    // 可任意组合文件名称
+                    def fileName = "imooc_v${defaultConfig.versionCode}_${releaseTime()}_${variant.productFlavors[0].name}_release.apk"
+                    output.outputFile = new File(outFile.parent, fileName);
+                }
+            }
+        } else {
+            variant.outputs.each { output ->
+                def outFile = output.outputFile
+                if (outFile != null && outFile.name.endsWith(".apk")) {
+                    // 可任意组合文件名称
+                    def fileName = "imooc_v${defaultConfig.versionCode}_${releaseTime()}_${variant.productFlavors[0].name}_debug.apk"
+                    output.outputFile = new File(outFile.parent, fileName);
+                }
+            }
+        }
+    }
+    // 多渠道打包
+    // 方法1：
+//    productFlavors {
+//        xiaomi {
+//            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "xiaomi"]
+//        }
+//        baidu {
+//            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "baidu"]
+//        }
+//        vivo {
+//            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "vivo"]
+//        }
+//        oppo {
+//            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "oppo"]
+//        }
+//    }
+    // 方法2：
+    productFlavors {
+        guanwang {}
+//        xiaomi {}
+//        baidu {}
+//        vivo {}
+//        oppo {}
+    }
+    productFlavors.all {
+        flavor -> flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
+    testCompile 'junit:junit:4.12'
+    // 添加友盟统计库依赖
+    compile 'com.umeng.analytics:analytics:latest.integration'
+}
